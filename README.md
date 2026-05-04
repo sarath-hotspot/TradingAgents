@@ -269,3 +269,64 @@ Please reference our work if you find *TradingAgents* provides you with some hel
       url={https://arxiv.org/abs/2412.20138}, 
 }
 ```
+
+## Sarath's experiments to reproduce the paper
+
+This repository includes a simple experiment that runs TradingAgents daily signals for AAPL and then simulates next-day execution PnL.
+
+### Experiment scope
+
+- Ticker: `AAPL`
+- Signal dates: `2024-01-02` to `2024-03-29` (trading days)
+- Decision scale: `Buy`, `Overweight`, `Hold`, `Underweight`, `Sell`
+- Position map:
+- `Buy` = `+1.0`
+- `Overweight` = `+0.5`
+- `Hold` = `0.0`
+- `Underweight` = `-0.5`
+- `Sell` = `-1.0`
+- Notional size: `100` shares per full position unit
+
+### Execution assumption used in this experiment
+
+- Signal on date `D` is executed at `D` open.
+- Position is exited at next trading day (`D+1`) open.
+- Daily PnL formula:
+- `PnL_D = position_D * shares * (open_(D+1) - open_D)`
+
+### Files used and generated
+
+- Input decisions file: `aapl_jan_march_2024.csv`
+- Backtest script: `backtest.py`
+- Backtest output table: `aapl_backtest_results.csv`
+- Backtest chart: `aapl_backtest_chart.png`
+
+### Reproduce locally
+
+Install extra plotting dependency (if needed):
+
+```bash
+pip install mplfinance
+```
+
+Run the backtest:
+
+```bash
+source .venv/bin/activate
+python backtest.py
+```
+
+### Result snapshot (open-to-open model)
+
+- Total trading days: `64`
+- Active trades: `20`
+- Flat (Hold) days: `44`
+- Winners: `7`
+- Losers: `13`
+- Win rate: `35.0%`
+- Total PnL: `-$631.45`
+- Avg win: `$116.44`
+- Avg loss: `-$111.27`
+- Profit factor: `1.05`
+
+The script also saves a candlestick chart with long/short signal markers and cumulative PnL overlay to `aapl_backtest_chart.png`.
